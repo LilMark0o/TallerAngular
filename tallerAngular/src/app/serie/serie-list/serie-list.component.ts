@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Serie } from '../serie';
+import { SerieService } from '../serie.service';
 
 @Component({
   selector: 'app-serie-list',
@@ -6,10 +8,35 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./serie-list.component.css']
 })
 export class SerieListComponent implements OnInit {
+  series: Array<Serie> = [];
+  average: number = 0;
+  dataShow: string = "";
 
-  constructor() { }
+  constructor(private serieService: SerieService) {}
 
-  ngOnInit() {
+  getSeries(): void {
+    this.serieService.getSeries().subscribe((series) => {
+      this.series = series;
+      // Calculate the average after data is loaded
+      this.getAverage();
+    });
   }
 
+  getAverage(): void {
+    let series = 0;
+    let suma = 0;
+    for (var serie of this.series) {
+      series++;
+      suma += serie.seasons;
+    }
+    this.average = suma / series;
+  }
+
+  showData(): void {
+    this.dataShow = "The seasons average of the " + this.series.length + " series is: " + this.average+" seasons.";
+  }
+
+  ngOnInit(): void {
+    this.getSeries();
+  }
 }
